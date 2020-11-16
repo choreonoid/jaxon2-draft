@@ -94,3 +94,48 @@ standardPose: [
   0.0, 40.0, -20.0, -5.0, -80.0, 0.0, 0.0, -20.0,
   0.0, 40.0, +20.0, +5.0, -80.0, 0.0, 0.0, -20.0
 ]
+
+linkGroup:
+  - name: UPPER-BODY
+    links:
+      - name: NECK
+        links: [ HEAD_LINK0, HEAD_LINK1 ]
+      - name: ARMS
+        links:
+          - name: R-ARM
+            links: [ RARM_LINK0, RARM_LINK1, RARM_LINK2, RARM_LINK3, RARM_LINK4, RARM_LINK5, RARM_LINK6, RARM_LINK7 ]
+          - name: L-ARM
+            links: [ LARM_LINK0, LARM_LINK1, LARM_LINK2, LARM_LINK3, LARM_LINK4, LARM_LINK5, LARM_LINK6, LARM_LINK7 ]
+      - name: CHEST
+        links: [ CHEST_LINK0, CHEST_LINK1, CHEST_LINK2 ]
+  - WAIST_LINK
+  - name: LOWER-BODY
+    links:
+      - name: LEGS
+        links:
+        - name: R-LEG
+          links: [ RLEG_LINK0, RLEG_LINK1, RLEG_LINK2, RLEG_LINK3, RLEG_LINK4, RLEG_LINK5 ]
+        - name: L-LEG
+          links: [ LLEG_LINK0, LLEG_LINK1, LLEG_LINK2, LLEG_LINK3, LLEG_LINK4, LLEG_LINK5 ]
+
+possibleIkInterpolationLinks: [ WAIST_LINK, RLEG_LINK5, LLEG_LINK5 ]
+defaultIkInterpolationLinks: [ WAIST_LINK, RLEG_LINK5, LLEG_LINK5 ]
+possileSupportLinks: [ RLEG_LINK5, LLEG_LINK5 ]
+
+defaultIKsetup:
+  WAIST_LINK: [ RLEG_LINK5, LLEG_LINK5 ]
+  RLEG_LINK5: [ WAIST_LINK ]
+  LLEG_LINK5: [ WAIST_LINK ]
+  RARM_LINK7: [ CHEST_LINK2 ]
+  LARM_LINK7: [ CHEST_LINK2 ]
+
+footLinks:
+  - link: RLEG_LINK5
+    kneePitchJoint: RLEG_JOINT3
+    soleCenter: [ 0.0, 0.0, -0.1 ]
+  - link: LLEG_LINK5
+    kneePitchJoint: LLEG_JOINT3
+    soleCenter: [ 0.0, 0.0, -0.1 ]
+
+collisionDetection:
+  excludeTreeDepth: 3
