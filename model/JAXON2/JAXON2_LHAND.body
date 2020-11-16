@@ -1,0 +1,145 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: JAXON2_LHAND
+rootLink: LARM_LINK7
+
+links:
+  -
+    name: LARM_LINK7
+    joint_name: LARM_JOINT7
+    jointType: fixed
+    centerOfMass: [ 0, 0, -0.085 ]
+    mass: 2.257
+    inertia: [
+      0.020752, -1.298590e-06, 8.029880e-06,
+                       0.0198,     0.000501,
+                                   0.013089
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/LARM_LINK7.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/LARM_LINK7.wrl"
+      -
+        type: ForceSensor
+        name: LH_SENSOR
+        translation: [ 0, 0, -0.069 ]
+        rotation: [ 0.382683, -0.92388, 0, 180 ]
+      -
+        type: Camera
+        name: LARM_CAMERA
+        translation: [ 0.05, 0, -0.16 ]
+        rotation: [ 0, 0, 1, -90 ]
+        format: COLOR
+        lensType: NORMAL
+        width: 640
+        height: 640
+        fieldOfView: 75
+        nearClipDistance: 0.03
+        frameRate: 10
+      -
+        type: SpotLight
+        name: LARM_LIGHT
+        translation: [ 0.05, 0, -0.16 ]
+        direction: [ 0, 0, -1 ]
+        beamWidth: 34.38  # original: 0.6 rad
+        cutOffAngle: 38.39  # original: 0.67 rad
+        attenuation: [ 1, 0, 2 ]
+        on: off
+      -
+        type: Camera
+        name: LARM_CAMERA_N
+        translation: [ -0.05, 0, -0.16 ]
+        rotation: [ 0, 1, 0, -90 ]
+        format: COLOR
+        lensType: NORMAL
+        width: 640
+        height: 640
+        fieldOfView: 75
+        nearClipDistance: 0.03
+        frameRate: 10
+      -
+        type: SpotLight
+        name: LARM_LIGHT_N
+        translation: [ -0.05, 0, -0.16 ]
+        direction: [ -1, 0, 0 ]
+        beamWidth: 34.38  # original: 0.6 rad
+        cutOffAngle: 38.39  # original: 0.67 rad
+        attenuation: [ 1, 0, 2 ]
+        on: off
+  -
+    name: LARM_FINGER0
+    parent: LARM_LINK7
+    translation: [ 0, -0.06, -0.1725 ]
+    rotation: [ -0.7071067811865475, 0, 0.7071067811865475, 180 ]
+    joint_name: LARM_F_JOINT0
+    jointId: 33
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -80, 35 ]
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+    rotorInertia: 0.4
+    gearRatio: 1
+    centerOfMass: [ 0.077, 0.0138, 0 ]
+    mass: 0.15
+    inertia: [
+      4.450495e-05, 0.000156,       0,
+                    0.001245,       0,
+                              0.00128
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/FINGER_LINK0.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/FINGER_BB_0.wrl"
+  -
+    name: LARM_FINGER1
+    parent: LARM_LINK7
+    translation: [ 0, 0.06, -0.1725 ]
+    rotation: [ -0.7071067811865475, 0, 0.7071067811865475, 180 ]
+    joint_name: LARM_F_JOINT1
+    jointId: 34
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -35, 80 ]
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+    rotorInertia: 0.4
+    gearRatio: 1
+    centerOfMass: [ 0.077, 0.0138, 0 ]
+    mass: 0.3
+    inertia: [
+      4.450495e-05, 0.000156,       0,
+                    0.001245,       0,
+                              0.00128
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/FINGER_LINK1.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/FINGER_BB_1.wrl"

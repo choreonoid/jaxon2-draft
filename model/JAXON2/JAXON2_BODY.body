@@ -1,0 +1,275 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: radian
+name: JAXON2_BODY
+rootLink: WAIST_LINK
+
+links:
+  -
+    name: WAIST_LINK
+    translation: [ 0, 0, 1.0225 ]
+    jointType: free
+    centerOfMass: [ -0.1059, -0.00067, -0.023 ]
+    mass: 22.7
+    inertia: [
+      0.229835, 0.00171,  0.135708,
+                0.535336, 0.000616, 
+                          0.549159
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/BODY.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/BODY.wrl"
+      - 
+        type: AccelerationSensor
+        name: AccelerationSensor
+        id: 0
+        rotation: [0.707107, 0, -0.707107, 3.14159]
+      - type: RateGyroSensor
+        name: GyroSensor
+        id: 1
+        rotation: [0.707107, 0, -0.707107, 3.14159]
+  -
+    name: CHEST_LINK0
+    parent: WAIST_LINK
+    translation: [ 0.006, 0, 0.128 ]
+    joint_name: CHEST_JOINT0
+    jointId: 12
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -0.198551, 0.198551 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ -0.0084, 0.00137, 0.01359 ]
+    mass: 0.866
+    inertia: [
+      0.00125384,          0,           0,
+                  0.00123407,           0,
+                              0.000677392
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/CHEST_LINK0.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/CHEST_LINK0.wrl"
+  -
+    name: CHEST_LINK1
+    parent: CHEST_LINK0
+    translation: [ 0, 0, 0.025 ]
+    joint_name: CHEST_JOINT1
+    jointId: 13
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -0.034906585040, 0.6108652381980153 ] # -3deg ~ +35deg
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ -0.111697, 0.00390, 0.03652 ]
+    mass: 18.23
+    inertia: [
+      0.186526, 0.003889, -0.039414,
+                0.418012, 0.001281,
+                          0.477668
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/CHEST_LINK1.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/CHEST_LINK1.wrl"
+  -
+    name: CHEST_LINK2
+    parent: CHEST_LINK1
+    translation: [ 0, 0, 0.3085 ]
+    joint_name: CHEST_JOINT2
+    jointId: 14
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -1.0566, 1.0566 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ -0.13693, -0.00113, -0.05796 ]
+    mass: 31.33
+    inertia: [
+      0.510746, 0.005161, 0.143334,
+                1.09582,  0.004687,
+                          1.02505
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/CHEST_LINK2.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/CHEST_LINK2.wrl"
+      - 
+        type: Camera
+        name: CHEST_CAMERA
+        id: 2
+        translation: [ 0.164, 0, -0.007 ]
+        rotation: [ 0.3243587440432960, -0.3243587440432962, -0.8885847232117547, 1.6886478500368325 ]
+        format: COLOR
+        lensType: FISHEYE
+        width: 640
+        height: 640
+        fieldOfView: 2.61799 # 150 deg
+        nearClipDistance: 0.1
+        frameRate: 5
+  -
+    name: HEAD_LINK0
+    parent: CHEST_LINK2
+    translation: [ -0.015, 0, 0.0835 ]
+    joint_name: HEAD_JOINT0
+    jointId: 15
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -0.5759586531581288, 0.5410520681182421 ] # -33deg ~ +31deg
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ -0.01227, 0,  0.03231 ]
+    mass: 1.086
+    inertia: [
+      0.0031,     0,  0,
+              0.0035, 0,
+                      0.00119
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/HEAD_LINK0.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/HEAD_LINK0.wrl"
+  -
+    name: HEAD_LINK1
+    parent: HEAD_LINK0
+    translation: [ 0, 0, 0.102 ]
+    joint_name: HEAD_JOINT1
+    jointId: 16
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -0.5759586531581288, 0.698132 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.042, 0.004, 0.058 ]
+    mass: 4.274
+    inertia: [
+      0.035683, 0.000877, -0.003172,
+                0.040037,  0.000652,
+                           0.035345
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/HEAD_LINK1.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/HEAD_LINK1.wrl"
+      -
+        type: Camera
+        name: HEAD_LEFT_CAMERA
+        translation: [ 0.1005, 0.035, 0.05425 ]
+        rotation: [ 0.57735026919, -0.57735026919, -0.57735026919, 2.094395102393 ]
+        format: COLOR_DEPTH
+        lensType: NORMAL
+        width: 640
+        height: 480
+        fieldOfView: 1.5708
+        nearClipDistance: 0.05
+        farClipDistance: 30.0
+        frameRate: 15
+      -
+        type: Camera
+        name: HEAD_RIGHT_CAMERA
+        translation: [ 0.1005, -0.035, 0.05425 ]
+        rotation: [ 0.57735026919, -0.57735026919, -0.57735026919, 2.094395102393 ]
+        format: COLOR_DEPTH
+        lensType: NORMAL
+        width: 640
+        height: 480
+        fieldOfView: 1.5708
+        nearClipDistance: 0.05
+        farClipDistance: 30.0
+        frameRate: 15
+      -
+        type: SpotLight
+        name: HEAD_MAIN_LIGHT
+        translation: [ 0.0559, 0, 0.14425 ]
+        direction: [ 1, 0, 0 ]
+        beamWidth: 0.7
+        cutOffAngle: 0.75
+        attenuation: [ 1, 0, 0.01 ]
+        on: off
+  -
+    name: RANGE_LINK
+    parent: HEAD_LINK1
+    translation: [ 0, 0, 0.102 ]
+    jointId: 37
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: 0
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.03, 0, 0 ]
+    mass: 0.4
+    inertia: [
+      0.00024,       0,       0,
+               0.00024,       0,
+                        0.00024
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RANGE_SENSOR.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RANGE_SENSOR.wrl"
+      -
+        type: RangeSensor
+        name: HEAD_RANGE
+        translation: [ 0.03, 0, 0.015 ]
+        rotation: [ 0.57735026919, -0.57735026919, -0.57735026919, 2.094395102393 ]
+        yawRange: 2.8797932657906435 ## 165 deg
+        yawStep: 0.004363323129985825 ## 661 line
+        scanRate: 40
+        minDistance: 0.2
+        maxDistance: 30.0

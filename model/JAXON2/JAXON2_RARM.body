@@ -1,0 +1,210 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: radian
+name: JAXON2_RARM
+rootLink: RARM_LINK0
+
+links:
+  -
+    name: RARM_LINK0
+    joint_name: RARM_JOINT0
+    jointType: fixed
+    centerOfMass: [ -0.01745, -0.00887, -0.00015 ]
+    mass: 1.048
+    inertia: [
+      0.0029762,          0,          0,
+                 0.00235085,          0,
+                             0.00355486
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK0.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK0.wrl"
+  -
+    name: RARM_LINK1
+    parent: RARM_LINK0
+    translation: [ 0, -0.07275, 0 ]
+    joint_name: RARM_JOINT1
+    jointId: 18
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -3.14159, 3.14159 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.00011, -0.01799, 0.00288 ]
+    mass: 0.298
+    inertia: [
+      0.000412035,           0,           0,
+                   0.000251611,           0,
+                                0.000376771
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK1.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK1.wrl"
+  -
+    name: RARM_LINK2
+    parent: RARM_LINK1
+    translation: [ 0, -0.057, 0 ]
+    joint_name: RARM_JOINT2
+    jointId: 19
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: -0.2762
+    jointRange: [ -3.14159, -0.2762 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.00845, -0.00671, -0.0881 ]
+    mass: 2.168
+    inertia: [
+      0.0127408,         0,          0,
+                 0.0133751,          0,
+                            0.00460362
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK2.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK2.wrl"
+  -
+    name: RARM_LINK3
+    parent: RARM_LINK2
+    translation: [ 0, 0, -0.1965 ]
+    joint_name: RARM_JOINT3
+    jointId: 20
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -3.14159, 3.14159 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.01393, 0, -0.07574 ]
+    mass: 1.315
+    inertia: [
+      0.00451716,         0,          0,
+                  0.0055237,          0,
+                             0.00217053
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK3.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK3.wrl"
+  -
+    name: RARM_LINK4
+    parent: RARM_LINK3
+    translation: [ 0, 0, -0.126 ]
+    joint_name: RARM_JOINT4
+    jointId: 21
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -2.19006, 1.0472 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0, -0.00551, -0.0426 ]
+    mass: 1.641
+    inertia: [
+      0.00665559,          0,          0,
+                  0.00598857,          0,
+                              0.00288237
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK4.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK4.wrl"
+  -
+    name: RARM_LINK5
+    parent: RARM_LINK4
+    translation: [ 0, 0, -0.1275 ]
+    joint_name: RARM_JOINT5
+    jointId: 22
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -3.14159, 3.14159 ]
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.01271, 0, -0.08415 ]
+    mass: 1.305
+    inertia: [
+      0.00533939,          0,          0,
+                  0.00624028,          0,
+                              0.00205604
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK5.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK5.wrl"
+  -
+    name: RARM_LINK6
+    parent: RARM_LINK5
+    translation: [ 0, 0, -0.146 ]
+    joint_name: RARM_JOINT6
+    jointId: 23
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -1.5708, 1.54494 ] # -90deg ~ +88.5deg
+    jointVelocityRange: [ -4, 4 ]
+    centerOfMass: [ 0.00013, -0.01427, 0.00188 ]
+    mass: 0.505
+    inertia: [
+      0.000901789,           0,           0,
+                   0.000626727,           0,
+                                0.000593753
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RARM_LINK6.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RARM_LINK6.wrl"

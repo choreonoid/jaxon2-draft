@@ -1,0 +1,186 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: radian
+name: JAXON2_RLEG
+rootLink: RLEG_LINK0
+
+links:
+  -
+    name: RLEG_LINK0
+    joint_name: RLEG_JOINT0
+    jointType: fixed
+    centerOfMass: [ -0.02299, 0.00588, -0.07031 ]
+    mass: 2.915
+    inertia: [
+      0.00999808, -1.99354e-06, 7.22147e-07,
+                    0.00999559, 3.13302e-06,
+                                 0.00999172
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK0.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RLEG_LINK0.wrl"
+  -
+    name: RLEG_LINK1
+    parent: RLEG_LINK0
+    translation: [ 0, 0, -0.122 ]
+    joint_name: RLEG_JOINT1
+    jointId: 1
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -0.725029, 0.523599 ]
+    jointVelocityRange: [ -17, 17 ]
+    centerOfMass: [ -0.00441, -0.00696, -0.00694 ]
+    mass: 1.199
+    inertia: [
+      0.00299879,          0,          0,
+                  0.00179963,          0,
+                              0.00343603
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK1.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RLEG_LINK1.wrl"
+  -
+    name: RLEG_LINK2
+    parent: RLEG_LINK1
+    translation: [ 0, 0, -0.01 ]
+    joint_name: RLEG_JOINT2
+    jointId: 2
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -2.11843, 0.785398 ]
+    jointVelocityRange: [ -17, 17 ]
+    centerOfMass: [ 0.00658, -0.03431, -0.18864 ]
+    mass: 5.783
+    inertia: [
+      0.109779, 0.0002015,  0.00500356,
+                 0.109973, -0.00331032,
+                             0.0103577
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK2.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RLEG_LINK2.wrl"
+  -
+    name: RLEG_LINK3
+    parent: RLEG_LINK2
+    translation: [ 0, 0, -0.38 ]
+    joint_name: RLEG_JOINT3
+    jointId: 3
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ 0, 2.77419 ]
+    jointVelocityRange: [ -17, 17 ]
+    centerOfMass: [ 0.0176, -0.01611, -0.17992 ]
+    mass: 3.156
+    inertia: [
+      0.0592962,         0,         0,
+                 0.0592638,         0,
+                            0.00799027
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK3.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RLEG_LINK3.wrl"
+  -
+    name: RLEG_LINK4
+    parent: RLEG_LINK3
+    translation: [ 0, 0, -0.38 ]
+    joint_name: RLEG_JOINT4
+    jointId: 4
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -1.38564, 1.47343 ]
+    jointVelocityRange: [ -17, 17 ]
+    centerOfMass: [ -0.00769, -0.00203, -0.00714 ]
+    mass: 0.836
+    inertia: [
+      0.0014428,        0,          0,
+                 0.001606,          0,
+                           0.00150135
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK4.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          uri: "resource/convex_hull/RLEG_LINK4.wrl"
+  -
+    name: RLEG_LINK5
+    parent: RLEG_LINK4
+    translation: [ 0, 0, -0.04 ]
+    joint_name: RLEG_JOINT5
+    jointId: 5
+    jointType: revolute
+    jointAxis: [ 1, 0, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -1.0472, 1.0472 ]
+    jointVelocityRange: [ -17, 17 ]
+    centerOfMass: [ 0.00064, -0.00264, -0.05633 ]
+    mass: 1.552
+    inertia: [
+      0.00442296,          0,          0,
+                  0.00907896,          0,
+                              0.00902826
+    ]
+    elements:
+      -
+        type: Visual
+        elements:
+          -
+            type: Resource
+            uri: "resource/RLEG_LINK5.wrl"
+      -
+        type: Collision
+        elements:
+          type: Resource
+          translation: [ 0, 0, -0.073 ]
+          uri: "resource/convex_hull/RLEG_LINK5_L.wrl"
+      -
+        type: ForceSensor
+        name: RF_SENSOR
+        translation: [ 0, 0, -0.069 ]
+        rotation: [ 0, 1, 0, 3.14159 ]

@@ -1,0 +1,96 @@
+format: ChoreonoidBody
+formatVersion: 1.0
+angleUnit: degree
+name: JAXON2
+rootLink: WAIST_LINK
+
+links:
+  -
+    type: SubBody
+    uri: "JAXON2_BODY.body"
+    jointType: free
+  -
+    type: SubBody
+    uri: "JAXON2_LARM.body"
+    parent: CHEST_LINK2
+    translation: [ 0, 0.0875, 0 ]
+    jointId: 25
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -81.4, 8.29 ]
+    # jointRange: [ -1.4208, 0.144751 ] in rad
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+  -
+    type: SubBody
+    uri: "JAXON2_LHAND.body"
+    parent: LARM_LINK6
+    translation: [ 0, 0, -0.04 ]
+    jointId: 32
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -81, 60 ]
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+  -
+    type: SubBody
+    uri: "JAXON2_RARM.body"
+    parent: CHEST_LINK2
+    translation: [ 0, -0.0875, 0 ]
+    jointId: 17
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -8.29, 81.4 ]
+    # jointRange: [ -0.144751, 1.4208 ] in rad
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+  -
+    type: SubBody
+    uri: "JAXON2_RHAND.body"
+    parent: RARM_LINK6
+    translation: [ 0, 0, -0.04 ]
+    jointId: 24
+    jointType: revolute
+    jointAxis: [ 0, 1, 0 ]
+    jointDisplacement: 0
+    jointRange: [ -81, 60 ]
+    jointVelocityRange: [ -229, 229 ]
+    # jointVelocityRange: [ -4, 4 ] in rad/s
+  -
+    type: SubBody
+    uri: "JAXON2_LLEG.body"
+    parent: WAIST_LINK
+    translation: [ 0, 0.1, 0.0095 ]
+    jointId: 6
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -62.9, 58.8 ]
+    # jointRange: [ -1.0972, 1.02662 ] in rad
+    jointVelocityRange: [ -974, 974 ]
+    # jointVelocityRange: [ -17, 17 ] in rad/s
+  -
+    type: SubBody
+    uri: "JAXON2_RLEG.body"
+    parent: WAIST_LINK
+    translation: [ 0, -0.1, 0.0095 ]
+    jointId: 0
+    jointType: revolute
+    jointAxis: [ 0, 0, 1 ]
+    jointDisplacement: 0
+    jointRange: [ -58.8, 62.9 ]
+    # jointRange: [ -1.02662, 1.0972 ] in rad
+    jointVelocityRange: [ -974, 974 ]
+    # jointVelocityRange: [ -17, 17 ] in rad/s
+
+standardPose: [ 
+  0.0, 0.0, -20.0, 40.0, -20.0, 0.0,
+  0.0, 0.0, -20.0, 40.0, -20.0, 0.0,
+  0.0, 0.0, 0.0,
+  0.0, 0.0,
+  0.0, 40.0, -20.0, -5.0, -80.0, 0.0, 0.0, -20.0,
+  0.0, 40.0, +20.0, +5.0, -80.0, 0.0, 0.0, -20.0
+]
