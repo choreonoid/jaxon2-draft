@@ -1,0 +1,2 @@
+choreonoid_add_simple_controller(Jaxon2WalkPatternController Jaxon2WalkPatternController.cpp)
+install(FILES Jaxon2Walk.cnoid DESTINATION ${CNOID_SHARE_SUBDIR}/project)
