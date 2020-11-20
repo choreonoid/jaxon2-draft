@@ -19,8 +19,6 @@ public:
     virtual bool initialize(SimpleControllerIO* io) override
     {
         ioBody = io->body();
-        string patternFile;
-        string opt = io->optionString();
         
         for(auto joint : ioBody->joints()){
             joint->setActuationMode(Link::JOINT_DISPLACEMENT);
