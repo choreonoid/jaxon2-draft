@@ -1,9 +1,12 @@
+#include <cnoid/BasicSensors>
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>
 #include <cnoid/Link>
 #include <cnoid/MassMatrix>
 #include <cnoid/SimpleController>
 #include <cnoid/Vector3Seq>
+
+#include <iostream>
 
 using namespace std;
 using namespace cnoid;
@@ -51,10 +54,11 @@ const double dgain[] = {
 class Jaxon2WalkController : public SimpleController
 {
     Body* ioBody;
-    
+    ForceSensor *lf_sensor, *rf_sensor;
     int currentFrameIndex;
     double dt;
     std::vector<double> q_old, qref_old;
+    Vector3 zmp;
 
     shared_ptr<MultiValueSeq> qseq;
     shared_ptr<Vector3Seq> zmpseq;
@@ -63,6 +67,9 @@ public:
     virtual bool initialize(SimpleControllerIO* io) override
     {
         ioBody = io->body();
+        rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
+        lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
+
         dt = io->timeStep();
         q_old.resize(ioBody->numJoints(), 0.0);
         qref_old.resize(ioBody->numJoints(), 0.0);
@@ -71,6 +78,8 @@ public:
             joint->setActuationMode(Link::JOINT_TORQUE);
             io->enableIO(joint);
         }
+        io->enableInput(rf_sensor);
+        io->enableInput(lf_sensor);
 
         auto path = shareDirPath() / "JAXON2" / "motion" / "JAXON2" / "SampleWalkPattern.seq";
         BodyMotion motion;
@@ -115,14 +124,55 @@ public:
             qref_old[i] = qref[i];
         }
 
-        Vector3 zmpref = zmpseq->at(currentFrameIndex);
-        
+        const Vector3 zmpref = zmpseq->at(currentFrameIndex);
+        Vector3 zmp;
+
+        const Vector6 fr_local = rf_sensor->F();
+        const Matrix3 rf_rotation = ioBody->link("RLEG_LINK5")->R() * rf_sensor->localRotation(); 
+        Vector6 fr; 
+        fr << rf_rotation.transpose() * fr_local.block<3, 1>(0, 0),
+              rf_rotation.transpose() * fr_local.block<3, 1>(3, 0);
+        const Vector3 rf_position = ioBody->link("RLEG_LINK5")->p() + ioBody->link("RLEG_LINK5")->R() * rf_sensor->localTranslation();
+
+        const Vector6 fl_local = lf_sensor->F();
+        const Matrix3 lf_rotation = ioBody->link("LLEG_LINK5")->R() * lf_sensor->localRotation(); 
+        Vector6 fl;
+        fl << lf_rotation.transpose() * fl_local.block<3, 1>(0, 0),
+              lf_rotation.transpose() * fl_local.block<3, 1>(3, 0);
+        const Vector3 lf_position = ioBody->link("LLEG_LINK5")->p() + ioBody->link("LLEG_LINK5")->R() * lf_sensor->localTranslation();
+
+        if(fr[2] > 0.0 && fl[2] > 0.0) {
+            const double px = (rf_position[0] * fr[2] + lf_position[0] * fl[2]) / (fr[2] + fl[2]);
+            const double py = (rf_position[1] * fr[2] + lf_position[1] * fl[2]) / (fr[2] + fl[2]);
+            zmp << px, py, 0.0;
+            zmp += rf_sensor->localTranslation();
+        } else if(fr[2] > 0.0) {
+            calcZMPfromWrench(fr, zmp);
+            zmp += rf_position;
+        } else if(fl[2] > 0.0) {
+            calcZMPfromWrench(fl, zmp);
+            zmp += lf_position;
+        } else {
+            zmp = Vector3::Zero();
+        }
+
         bool isActive = false;
         if(currentFrameIndex < qseq->numFrames()) {
             ++currentFrameIndex;
             isActive = true;
         }
         return isActive;
+    }
+
+    void calcZMPfromWrench(const Vector6& wrench, Vector3& zmp_out) {
+        const double d = 0.019;  // distance from the bottom of foot to the force sensor
+        if(wrench[2] > 0.0) {
+            const double px = - (wrench[4] + d * wrench[0]) / wrench[2];
+            const double py = (wrench[3] + d * wrench[1]) / wrench[2];
+            zmp_out << px, py, 0.0;
+        } else {
+            zmp_out = Vector3::Zero();
+        }
     }
 };
 
