@@ -53,7 +53,9 @@ const double dgain[] = {
 
 class Jaxon2WalkController : public SimpleController
 {
-    Body* ioBody;
+    Body *ioBody, *ikBody;
+    std::shared_ptr<JointPath> baseToRAnkle, baseToLAnkle;
+
     ForceSensor *lf_sensor, *rf_sensor;
     int currentFrameIndex;
     double dt;
@@ -66,13 +68,19 @@ class Jaxon2WalkController : public SimpleController
 public:
     virtual bool initialize(SimpleControllerIO* io) override
     {
+        // initializes variables
+        currentFrameIndex = 0;
+        dt = io->timeStep();
+        q_old.resize(ioBody->numJoints(), 0.0);
+        qref_old.resize(ioBody->numJoints(), 0.0);
+
+        // registers the body i/o
         ioBody = io->body();
         rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
         lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
 
-        dt = io->timeStep();
-        q_old.resize(ioBody->numJoints(), 0.0);
-        qref_old.resize(ioBody->numJoints(), 0.0);
+        // prepares a virtual body used in FK/IK
+        ikBody = ioBody->clone();
 
         for(auto joint : ioBody->joints()) {
             joint->setActuationMode(Link::JOINT_TORQUE);
@@ -81,6 +89,16 @@ public:
         io->enableInput(rf_sensor);
         io->enableInput(lf_sensor);
 
+        Link *base = ikBody->rootLink();
+        Link *rAnkle = ikBody->link("RLEG_ANKLE_R");
+     	Link *lAnkle = ikBody->link("LLEG_ANKLE_R");
+
+        baseToRAnkle = getCustomJointPath(ikBody, base, rAnkle);
+        baseToRAnkle->calcForwardKinematics();
+        baseToLAnkle = getCustomJointPath(ikBody, base, lAnkle);
+        baseToLAnkle->calcForwardKinematics();
+
+        // loads reference trajectories
         auto path = shareDirPath() / "JAXON2" / "motion" / "JAXON2" / "SampleWalkPattern.seq";
         BodyMotion motion;
         if(!motion.loadStandardYAMLformat(path.string())) {
@@ -104,8 +122,6 @@ public:
         if(fabs(io->timeStep() - qseq->timeStep()) > 1.0e-6) {
             io->os() << "Warning: the simulation time step is different from that of the motion data " << endl;
         }
-
-        currentFrameIndex = 0;
 
         return true;
     }
