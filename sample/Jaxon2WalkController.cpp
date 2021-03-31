@@ -1,6 +1,7 @@
 #include <cnoid/BasicSensors>
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>
+#include <cnoid/JointPath>
 #include <cnoid/Link>
 #include <cnoid/MassMatrix>
 #include <cnoid/SimpleController>
@@ -60,7 +61,7 @@ class Jaxon2WalkController : public SimpleController
     int currentFrameIndex;
     double dt;
     std::vector<double> q_old, qref_old;
-    Vector3 zmp;
+    Vector3 bodyModification, dZmp;
 
     shared_ptr<MultiValueSeq> qseq;
     shared_ptr<Vector3Seq> zmpseq;
@@ -125,6 +126,66 @@ public:
 
         return true;
     }
+
+    void calculateBodyModification(const Vector3 &refZmp, const VectorXd &zmp )
+    {
+        // sets gains
+		const double xg_pgain = 2.0;
+		const double xg_dgain = 4.0;
+		const double yg_pgain = 0.1;
+		const double yg_dgain = 0.2;
+
+        // calculates the (3-dimensional) ZMP error
+		const Vector3d errorZmp = refZmp - zmp;
+
+        // calculates the reference body displacement from the ZMP error
+		bodyModification[0] = xg_pgain * errorZmp[0] + xg_dgain * dZmp[0];
+		bodyModification[1] = yg_pgain * errorZmp[1] + yg_dgain * dZmp[1];
+		dZmp[0] += bodyModification[0] * dt;
+		dZmp[1] += bodyModification[1] * dt;
+
+        return;
+	}
+
+	void modifyFootPositions()
+	{
+		Vector3 pr, pl;  // foot positions (relative)
+        Matrix3 Rr, Rl;  // foot orientations (relative)
+		bool isSuccess = true;
+
+        auto qref = qseq->frame(currentFrameIndex);
+        for(int i = 0; i < ikBody->numJoints(); ++i)
+        {
+            ikBody->joint(i)->q() = ioBody->joint(i)->q();
+        }
+        baseToRAnkle->calcForwardKinematics();
+        baseToLAnkle->calcForwardKinematics();
+
+        // applies feedbacks
+        pr = baseToRAnkle->endLink()->p() - baseToRAnkle->baseLink()->p() - bodyModification;
+        Rr = baseToRAnkle->baseLink()->R().transpose() * baseToRAnkle->endLink()->R();
+
+        pl = baseToLAnkle->endLink()->p() - baseToLAnkle->baseLink()->p() - bodyModification;
+        Rl = baseToLAnkle->baseLink()->R().transpose() * baseToLAnkle->endLink()->R();
+
+        // solves IK
+		isSuccess &= baseToRAnkle->calcInverseKinematics(pr, Rr);
+		isSuccess &= baseToLAnkle->calcInverseKinematics(pl, Rl);
+		if( isSuccess )
+		{
+			for( int i = 0; i < baseToRAnkle->numJoints(); ++i )
+			{
+		    	Link *joint = baseToRAnkle->joint( i );
+		        qref[ joint->jointId() ] = joint->q();
+		    }
+			for( int i = 0; i < baseToLAnkle->numJoints(); ++i )
+			{
+		    	Link *joint = baseToLAnkle->joint( i );
+		        qref[ joint->jointId() ] = joint->q();
+		    }
+            qseq->frame(currentFrameIndex) = qref;
+		}
+	}
 
     virtual bool control() override
     {
