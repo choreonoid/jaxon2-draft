@@ -92,7 +92,7 @@ public:
 
         Link *base = ikBody->rootLink();
         Link *rAnkle = ikBody->link("RLEG_ANKLE_R");
-     	Link *lAnkle = ikBody->link("LLEG_ANKLE_R");
+         Link *lAnkle = ikBody->link("LLEG_ANKLE_R");
 
         baseToRAnkle = getCustomJointPath(ikBody, base, rAnkle);
         baseToRAnkle->calcForwardKinematics();
@@ -130,28 +130,28 @@ public:
     void calculateBodyModification(const Vector3 &refZmp, const VectorXd &zmp )
     {
         // sets gains
-		const double xg_pgain = 2.0;
-		const double xg_dgain = 4.0;
-		const double yg_pgain = 0.1;
-		const double yg_dgain = 0.2;
+        const double xg_pgain = 2.0;
+        const double xg_dgain = 4.0;
+        const double yg_pgain = 0.1;
+        const double yg_dgain = 0.2;
 
         // calculates the (3-dimensional) ZMP error
-		const Vector3d errorZmp = refZmp - zmp;
+        const Vector3d errorZmp = refZmp - zmp;
 
         // calculates the reference body displacement from the ZMP error
-		bodyModification[0] = xg_pgain * errorZmp[0] + xg_dgain * dZmp[0];
-		bodyModification[1] = yg_pgain * errorZmp[1] + yg_dgain * dZmp[1];
-		dZmp[0] += bodyModification[0] * dt;
-		dZmp[1] += bodyModification[1] * dt;
+        bodyModification[0] = xg_pgain * errorZmp[0] + xg_dgain * dZmp[0];
+        bodyModification[1] = yg_pgain * errorZmp[1] + yg_dgain * dZmp[1];
+        dZmp[0] += bodyModification[0] * dt;
+        dZmp[1] += bodyModification[1] * dt;
 
         return;
-	}
+    }
 
-	void modifyFootPositions()
-	{
-		Vector3 pr, pl;  // foot positions (relative)
+    void modifyFootPositions()
+    {
+        Vector3 pr, pl;  // foot positions (relative)
         Matrix3 Rr, Rl;  // foot orientations (relative)
-		bool isSuccess = true;
+        bool isSuccess = true;
 
         auto qref = qseq->frame(currentFrameIndex);
         for(int i = 0; i < ikBody->numJoints(); ++i)
@@ -169,23 +169,23 @@ public:
         Rl = baseToLAnkle->baseLink()->R().transpose() * baseToLAnkle->endLink()->R();
 
         // solves IK
-		isSuccess &= baseToRAnkle->calcInverseKinematics(pr, Rr);
-		isSuccess &= baseToLAnkle->calcInverseKinematics(pl, Rl);
-		if( isSuccess )
-		{
-			for( int i = 0; i < baseToRAnkle->numJoints(); ++i )
-			{
-		    	Link *joint = baseToRAnkle->joint( i );
-		        qref[ joint->jointId() ] = joint->q();
-		    }
-			for( int i = 0; i < baseToLAnkle->numJoints(); ++i )
-			{
-		    	Link *joint = baseToLAnkle->joint( i );
-		        qref[ joint->jointId() ] = joint->q();
-		    }
+        isSuccess &= baseToRAnkle->calcInverseKinematics(pr, Rr);
+        isSuccess &= baseToLAnkle->calcInverseKinematics(pl, Rl);
+        if(isSuccess)
+        {
+            for(int i = 0; i < baseToRAnkle->numJoints(); ++i)
+            {
+                Link *joint = baseToRAnkle->joint(i);
+                qref[joint->jointId()] = joint->q();
+            }
+            for(int i = 0; i < baseToLAnkle->numJoints(); ++i) 
+            {
+                Link *joint = baseToLAnkle->joint(i);
+                qref[joint->jointId()] = joint->q();
+            }
             qseq->frame(currentFrameIndex) = qref;
-		}
-	}
+        }
+    }
 
     virtual bool control() override
     {
