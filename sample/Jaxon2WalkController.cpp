@@ -72,11 +72,11 @@ public:
         // initializes variables
         currentFrameIndex = 0;
         dt = io->timeStep();
+        ioBody = io->body();
         q_old.resize(ioBody->numJoints(), 0.0);
         qref_old.resize(ioBody->numJoints(), 0.0);
 
-        // registers the body i/o
-        ioBody = io->body();
+        // registers force sensors
         rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
         lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
 
@@ -91,8 +91,8 @@ public:
         io->enableInput(lf_sensor);
 
         Link *base = ikBody->rootLink();
-        Link *rAnkle = ikBody->link("RLEG_ANKLE_R");
-         Link *lAnkle = ikBody->link("LLEG_ANKLE_R");
+        Link *rAnkle = ikBody->link("RLEG_LINK5");
+        Link *lAnkle = ikBody->link("LLEG_LINK5");
 
         baseToRAnkle = getCustomJointPath(ikBody, base, rAnkle);
         baseToRAnkle->calcForwardKinematics();
@@ -189,21 +189,7 @@ public:
 
     virtual bool control() override
     {
-        auto qref = qseq->frame(currentFrameIndex);
-        for(int i=0; i < 37; ++i) {
-            const double q = ioBody->joint(i)->q();
-            const double dq = (q - q_old.at(i)) / dt;
-            const double dqref = (qref[i] - qref_old[i]) / dt;
-            const double u = (qref[i] - q) * pgain[i] + (dqref - dq) * dgain[i];
-            ioBody->joint(i)->u() = u;
-
-            q_old[i] = q;
-            qref_old[i] = qref[i];
-        }
-
-        const Vector3 zmpref = zmpseq->at(currentFrameIndex);
         Vector3 zmp;
-
         const Vector6 fr_local = rf_sensor->F();
         const Matrix3 rf_rotation = ioBody->link("RLEG_LINK5")->R() * rf_sensor->localRotation(); 
         Vector6 fr; 
@@ -231,6 +217,22 @@ public:
             zmp += lf_position;
         } else {
             zmp = Vector3::Zero();
+        }
+
+        const Vector3 refZmp = zmpseq->at(currentFrameIndex);
+        calculateBodyModification(refZmp, zmp);
+        modifyFootPositions();
+
+        auto qref = qseq->frame(currentFrameIndex);
+        for(int i=0; i < 37; ++i) {
+            const double q = ioBody->joint(i)->q();
+            const double dq = (q - q_old.at(i)) / dt;
+            const double dqref = (qref[i] - qref_old[i]) / dt;
+            const double u = (qref[i] - q) * pgain[i] + (dqref - dq) * dgain[i];
+            ioBody->joint(i)->u() = u;
+
+            q_old[i] = q;
+            qref_old[i] = qref[i];
         }
 
         bool isActive = false;
