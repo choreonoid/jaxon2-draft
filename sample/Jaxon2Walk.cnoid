@@ -92,7 +92,7 @@ items:
           class: BodyItem
           is_checked: true
           data: 
-            file: "${HOME}/choreonoid/share/model/misc/floor.body"
+            file: "${SHARE}/model/misc/floor.body"
             format: CHOREONOID-BODY
             rootPosition: [ 0, 0, -0.1 ]
             rootAttitude: [ 
