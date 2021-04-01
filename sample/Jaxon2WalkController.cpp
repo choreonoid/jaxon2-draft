@@ -162,15 +162,14 @@ public:
         baseToLAnkle->calcForwardKinematics();
 
         // applies feedbacks
-        pr = baseToRAnkle->endLink()->p() - baseToRAnkle->baseLink()->p() - bodyModification;
-        Rr = baseToRAnkle->baseLink()->R().transpose() * baseToRAnkle->endLink()->R();
-
-        pl = baseToLAnkle->endLink()->p() - baseToLAnkle->baseLink()->p() - bodyModification;
-        Rl = baseToLAnkle->baseLink()->R().transpose() * baseToLAnkle->endLink()->R();
+        Isometry3 Tr = baseToRAnkle->baseLink()->T().inverse() * baseToRAnkle->endLink()->T();
+        Tr.translation() -= bodyModification;
+        Isometry3 Tl = baseToLAnkle->baseLink()->T().inverse() * baseToLAnkle->endLink()->T();
+        Tl.translation() -= bodyModification;
 
         // solves IK
-        isSuccess &= baseToRAnkle->calcInverseKinematics(pr, Rr);
-        isSuccess &= baseToLAnkle->calcInverseKinematics(pl, Rl);
+        isSuccess &= baseToRAnkle->calcInverseKinematics(Tr);
+        isSuccess &= baseToLAnkle->calcInverseKinematics(Tl);
         if(isSuccess)
         {
             for(int i = 0; i < baseToRAnkle->numJoints(); ++i)
