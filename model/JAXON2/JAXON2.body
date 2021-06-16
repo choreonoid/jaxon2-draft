@@ -126,7 +126,7 @@ linkGroup:
 
 possibleIkInterpolationLinks: [ WAIST_LINK, RLEG_LINK5, LLEG_LINK5 ]
 defaultIkInterpolationLinks: [ WAIST_LINK, RLEG_LINK5, LLEG_LINK5 ]
-possileSupportLinks: [ RLEG_LINK5, LLEG_LINK5 ]
+possibleSupportLinks: [ RLEG_LINK5, LLEG_LINK5 ]
 
 defaultIKsetup:
   WAIST_LINK: [ RLEG_LINK5, LLEG_LINK5 ]
