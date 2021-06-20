@@ -54,13 +54,20 @@ const double dgain[] = {
 
 class Jaxon2WalkController : public SimpleController
 {
-    Body *ioBody, *ikBody;
-    std::shared_ptr<JointPath> baseToRAnkle, baseToLAnkle;
+    Body *ioBody;
+    Body *ikBody;
+    Link *rFoot;
+    Link *lFoot;
+    ForceSensorPtr lf_sensor;
+    ForceSensorPtr rf_sensor;
 
-    ForceSensor *lf_sensor, *rf_sensor;
+    std::shared_ptr<JointPath> baseToRAnkle;
+    std::shared_ptr<JointPath> baseToLAnkle;
+
     int currentFrameIndex;
     double dt;
-    std::vector<double> q_old, qref_old;
+    std::vector<double> q_old;
+    std::vector<double> qref_old;
     std::vector<double> qref_modified;
     Vector3 bodyModification;
 
@@ -74,6 +81,8 @@ public:
         currentFrameIndex = 0;
         dt = io->timeStep();
         ioBody = io->body();
+        bodyModification = Vector3::Zero();
+
         q_old.reserve(ioBody->numJoints());
         qref_old.reserve(ioBody->numJoints());
         qref_modified.reserve(ioBody->numJoints());
@@ -84,33 +93,34 @@ public:
             qref_modified.push_back(q);
             // should be executed in when simulation starts
         }
-        bodyModification = Vector3::Zero();
 
-        // to calculate ZMP in the global coordinate
-        io->enableInput(ioBody->link("RLEG_LINK5"), LINK_POSITION);
-        io->enableInput(ioBody->link("LLEG_LINK5"), LINK_POSITION);
-
-        // registers force sensors
+        // turns force sensors on
         rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
         lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
+        io->enableInput(rf_sensor);
+        io->enableInput(lf_sensor);
 
-        // prepares a virtual body used in FK/IK
-        ikBody = ioBody->clone();
-
+        // drives joints with torque input
         for (auto joint : ioBody->joints()) {
             joint->setActuationMode(Link::JOINT_TORQUE);
             io->enableIO(joint);
         }
-        io->enableInput(rf_sensor);
-        io->enableInput(lf_sensor);
 
-        Link *base = ikBody->rootLink();
-        Link *rAnkle = ikBody->link("RLEG_LINK5");
-        Link *lAnkle = ikBody->link("LLEG_LINK5");
+        // sets to update global positions for calculating ZMP
+        rFoot = ioBody->link("RLEG_LINK5");
+        lFoot = ioBody->link("LLEG_LINK5");
+        io->enableInput(rFoot, LINK_POSITION);
+        io->enableInput(lFoot, LINK_POSITION);
 
-        baseToRAnkle = getCustomJointPath(ikBody, base, rAnkle);
+        // creates chains to solve IK
+        ikBody = ioBody->clone();
+        baseToRAnkle = getCustomJointPath(ikBody,
+                                          ikBody->rootLink(),
+                                          ikBody->link("RLEG_LINK5"));
         baseToRAnkle->calcForwardKinematics();
-        baseToLAnkle = getCustomJointPath(ikBody, base, lAnkle);
+        baseToLAnkle = getCustomJointPath(ikBody,
+                                          ikBody->rootLink(),
+                                          ikBody->link("LLEG_LINK5"));
         baseToLAnkle->calcForwardKinematics();
 
         // loads reference trajectories
@@ -200,23 +210,21 @@ public:
     {
         Vector3 zmp;
         const Vector6 fr_local = rf_sensor->F();
-        const Matrix3 rf_rotation = ioBody->link("RLEG_LINK5")->R()
-                                    * rf_sensor->localRotation();
+        const Matrix3 rf_rotation = rFoot->R() * rf_sensor->localRotation();
         Vector6 fr;
         fr << rf_rotation.transpose() * fr_local.block<3, 1>(0, 0),
             rf_rotation.transpose() * fr_local.block<3, 1>(3, 0);
-        const Vector3 rf_position = ioBody->link("RLEG_LINK5")->p()
-                                    + ioBody->link("RLEG_LINK5")->R()
+        const Vector3 rf_position = rFoot->p()
+                                    + rFoot->R()
                                           * rf_sensor->localTranslation();
 
         const Vector6 fl_local = lf_sensor->F();
-        const Matrix3 lf_rotation = ioBody->link("LLEG_LINK5")->R()
-                                    * lf_sensor->localRotation();
+        const Matrix3 lf_rotation = lFoot->R() * lf_sensor->localRotation();
         Vector6 fl;
         fl << lf_rotation.transpose() * fl_local.block<3, 1>(0, 0),
             lf_rotation.transpose() * fl_local.block<3, 1>(3, 0);
-        const Vector3 lf_position = ioBody->link("LLEG_LINK5")->p()
-                                    + ioBody->link("LLEG_LINK5")->R()
+        const Vector3 lf_position = lFoot->p()
+                                    + lFoot->R()
                                           * lf_sensor->localTranslation();
 
         if (fr[2] > 0.0 && fl[2] > 0.0) {
