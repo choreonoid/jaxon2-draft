@@ -39,7 +39,7 @@ links:
     jointDisplacement: 0
     jointRange: [ -0.523599, 0.725029 ]
     jointVelocityRange: [ -17, 17 ]
-    rotorInertia: 0.1
+    rotorInertia: 0.4
     centerOfMass: [ -0.00441, 0.00696, -0.00694 ]
     mass: 1.199
     inertia: [
@@ -70,7 +70,7 @@ links:
     jointDisplacement: 0
     jointRange: [ -2.11843, 0.785398 ]
     jointVelocityRange: [ -17, 17 ]
-    rotorInertia: 0.1
+    rotorInertia: 0.4
     centerOfMass: [ 0.00658, 0.03431, -0.18864 ]
     mass: 5.783
     inertia: [
@@ -101,7 +101,7 @@ links:
     jointDisplacement: 0
     jointRange: [ 0, 2.77419 ]
     jointVelocityRange: [ -17, 17 ]
-    rotorInertia: 0.1
+    rotorInertia: 0.4
     centerOfMass: [ 0.0176, 0.01611, -0.17992 ]
     mass: 3.156
     inertia: [
@@ -132,7 +132,7 @@ links:
     jointDisplacement: 0
     jointRange: [ -1.38564, 1.47343 ]
     jointVelocityRange: [ -17, 17 ]
-    rotorInertia: 0.1
+    rotorInertia: 0.4
     centerOfMass: [ -0.00769, 0.00203, -0.00714 ]
     mass: 0.836
     inertia: [
@@ -163,7 +163,7 @@ links:
     jointDisplacement: 0
     jointRange: [ -1.0472, 1.0472 ]
     jointVelocityRange: [ -17, 17 ]
-    rotorInertia: 0.1
+    rotorInertia: 0.4
     centerOfMass: [ 0.00064, 0.00264, -0.05633 ]
     mass: 1.552
     inertia: [
