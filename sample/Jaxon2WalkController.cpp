@@ -212,42 +212,7 @@ public:
 
     virtual bool control() override
     {
-        Vector3 zmp;
-        const Vector6 fr_local = rf_sensor->F();
-        const Matrix3 rf_rotation = rFoot->R() * rf_sensor->localRotation();
-        Vector6 fr;
-        fr << rf_rotation.transpose() * fr_local.block<3, 1>(0, 0),
-            rf_rotation.transpose() * fr_local.block<3, 1>(3, 0);
-        const Vector3 rf_position = rFoot->p()
-                                    + rFoot->R()
-                                          * rf_sensor->localTranslation();
-
-        const Vector6 fl_local = lf_sensor->F();
-        const Matrix3 lf_rotation = lFoot->R() * lf_sensor->localRotation();
-        Vector6 fl;
-        fl << lf_rotation.transpose() * fl_local.block<3, 1>(0, 0),
-            lf_rotation.transpose() * fl_local.block<3, 1>(3, 0);
-        const Vector3 lf_position = lFoot->p()
-                                    + lFoot->R()
-                                          * lf_sensor->localTranslation();
-
-        if (fr[2] > 0.0 && fl[2] > 0.0) {
-            Vector3 zmpr, zmpl;
-            calcZMPfromWrench(fr, zmpr);
-            calcZMPfromWrench(fl, zmpl);
-
-            zmp = ((zmpr + rf_position) * fr[2] + (zmpl + lf_position) * fl[2])
-                  / (fr[2] + fl[2]);
-        } else if (fr[2] > 0.0) {
-            calcZMPfromWrench(fr, zmp);
-            zmp += rf_position;
-        } else if (fl[2] > 0.0) {
-            calcZMPfromWrench(fl, zmp);
-            zmp += lf_position;
-        } else {
-            zmp = Vector3::Zero();
-        }
-
+        const Vector3 zmp = calcZMP();
         const Vector3 refZmp = zmpseq->at(currentFrameIndex);
         calculateBodyModification(refZmp, zmp);
         modifyFootPositions();
@@ -275,16 +240,84 @@ public:
         return isActive;
     }
 
-    void calcZMPfromWrench(const Vector6 &wrench, Vector3 &zmp_out)
+    Vector3 calcZMP()
     {
-        const double d
-            = 0.019;  // distance from the bottom of foot to the force sensor
+        // calculates foot poses with FK (root-relative)
+        for (int i = 0; i < ioBody->numJoints(); ++i) {
+            ikBody->joint(i)->q() = ioBody->joint(i)->q();
+        }
+        baseToRAnkle->calcForwardKinematics();
+        baseToLAnkle->calcForwardKinematics();
+
+        const Isometry3 right_foot_pose = ikBody->link("RLEG_LINK5")->T();
+        const Isometry3 left_foot_pose = ikBody->link("LLEG_LINK5")->T();
+
+        // calculates force sensor poses (root-relative)
+        const Isometry3 rf_sensor_pose = right_foot_pose * rf_sensor->T_local();
+        const Isometry3 lf_sensor_pose = left_foot_pose * lf_sensor->T_local();
+
+        // gets force sensor values (local)
+        const Vector6 right_wrench = rf_sensor->F();
+        const Vector6 left_wrench = lf_sensor->F();
+
+        return calcZMPfromDoubleWrench(rf_sensor_pose,
+                                       right_wrench,
+                                       lf_sensor_pose,
+                                       left_wrench);
+    }
+
+    Vector3 calcZMPfromSingleWrench(const Vector3 &position,
+                                    const Vector6 &wrench) const
+    {
+        // distance from the bottom of foot to the force sensor
+        const double d = 0.019;
         if (wrench[2] > 0.0) {
             const double px = -(wrench[4] + d * wrench[0]) / wrench[2];
             const double py = (wrench[3] + d * wrench[1]) / wrench[2];
-            zmp_out << px, py, 0.0;
+            return Vector3(px, py, 0.0) + position;
         } else {
-            zmp_out = Vector3::Zero();
+            return Vector3::Zero() + position;
+        }
+    }
+
+    Vector6 transformWrench(const Matrix3 &rotation, const Vector6 wrench) const
+    {
+        Vector6 wrench_transformed;
+        wrench_transformed << rotation * wrench.block<3, 1>(0, 0),
+            rotation * wrench.block<3, 1>(3, 0);
+        return wrench_transformed;
+    }
+
+    Vector3 calcZMPfromDoubleWrench(const Isometry3 &pose0,
+                                    const Vector6 &wrench0,
+                                    const Isometry3 &pose1,
+                                    const Vector6 wrench1) const
+    {
+        // transforms wrenches from sensor-local to root-relative
+        const Vector6 wrench0_transformed
+            = transformWrench(pose0.rotation().transpose(), wrench0);
+        const Vector6 wrench1_transformed
+            = transformWrench(pose1.rotation().transpose(), wrench1);
+
+        // determines foot states by refering to the vertical forces,
+        // i.e. wrench[2]
+        if (wrench0_transformed[2] > 0.0 && wrench1_transformed[2] > 0.0) {
+            const Vector3 zmp0 = calcZMPfromSingleWrench(pose0.translation(),
+                                                         wrench0_transformed);
+            const Vector3 zmp1 = calcZMPfromSingleWrench(pose1.translation(),
+                                                         wrench1_transformed);
+
+            return (zmp0 * wrench0_transformed[2]
+                    + zmp1 * wrench1_transformed[2])
+                   / (wrench0_transformed[2] + wrench1_transformed[2]);
+        } else if (wrench0_transformed[2] > 0.0) {
+            return calcZMPfromSingleWrench(pose0.translation(),
+                                           wrench0_transformed);
+        } else if (wrench1_transformed[2] > 0.0) {
+            return calcZMPfromSingleWrench(pose1.translation(),
+                                           wrench1_transformed);
+        } else {
+            return Vector3::Zero();
         }
     }
 };
