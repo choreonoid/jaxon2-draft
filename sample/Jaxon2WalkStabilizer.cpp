@@ -12,7 +12,6 @@
 #include "Jaxon2JointGains.h"
 #include "ZMPUtils.h"
 
-using namespace std;
 using namespace cnoid;
 
 class Jaxon2WalkStabilizer : public SimpleController
@@ -32,8 +31,8 @@ class Jaxon2WalkStabilizer : public SimpleController
     std::vector<double> qref_modified;
     Vector3 bodyModification;
 
-    shared_ptr<MultiValueSeq> qseq;
-    shared_ptr<Vector3Seq> zmpseq;
+    std::shared_ptr<MultiValueSeq> qseq;
+    std::shared_ptr<Vector3Seq> zmpseq;
 
 public:
     bool initialize(SimpleControllerIO *io) override
@@ -83,29 +82,29 @@ public:
                     / "SampleWalkPattern.seq";
         BodyMotion motion;
         if (!motion.loadStandardYAMLformat(path.string())) {
-            io->os() << motion.seqMessage() << endl;
+            io->os() << motion.seqMessage() << std::endl;
             return false;
         }
         qseq = motion.jointPosSeq();
         if (qseq->numFrames() == 0) {
-            io->os() << "Empty motion data." << endl;
+            io->os() << "Empty motion data." << std::endl;
             return false;
         }
         if (qseq->numParts() != ioBody->numJoints()) {
             io->os() << "Mismatch between the robot and the motion data "
                         "regarding the number of joints"
-                     << endl;
+                     << std::endl;
             return false;
         }
         zmpseq = motion.extraSeq<Vector3Seq>("ZMPSeq");
         if (!zmpseq || zmpseq->numFrames() == 0) {
-            io->os() << "A valid ZMP seq is not available." << endl;
+            io->os() << "A valid ZMP seq is not available." << std::endl;
             return false;
         }
         if (fabs(io->timeStep() - qseq->timeStep()) > 1.0e-6) {
             io->os() << "Warning: the simulation time step is different from "
                         "that of the motion data "
-                     << endl;
+                     << std::endl;
         }
 
         return true;
