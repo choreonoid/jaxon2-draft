@@ -13,7 +13,7 @@ using namespace cnoid;
 
 class Jaxon2WalkPatternController : public SimpleController
 {
-    Body* ioBody;
+    Body* ioBody_;
     int currentFrameIndex;
     std::shared_ptr<MultiValueSeq> qseq;
     std::shared_ptr<Vector3Seq> zmpseq;
@@ -21,9 +21,9 @@ class Jaxon2WalkPatternController : public SimpleController
 public:
     virtual bool initialize(SimpleControllerIO* io) override
     {
-        ioBody = io->body();
+        ioBody_ = io->body();
 
-        for (auto joint : ioBody->joints()) {
+        for (auto joint : ioBody_->joints()) {
             joint->setActuationMode(Link::JOINT_DISPLACEMENT);
             io->enableIO(joint);
         }
@@ -40,7 +40,7 @@ public:
             io->os() << "Empty motion data." << std::endl;
             return false;
         }
-        if (qseq->numParts() != ioBody->numJoints()) {
+        if (qseq->numParts() != ioBody_->numJoints()) {
             io->os() << "Mismatch between the robot and the motion data "
                         "regarding the number of joints"
                      << std::endl;
@@ -64,9 +64,9 @@ public:
 
     virtual bool control() override
     {
-        auto qref = qseq->frame(currentFrameIndex);
-        for (int i = 0; i < ioBody->numJoints(); ++i) {
-            ioBody->joint(i)->q_target() = qref[i];
+        auto qref_ = qseq->frame(currentFrameIndex);
+        for (int i = 0; i < ioBody_->numJoints(); ++i) {
+            ioBody_->joint(i)->q_target() = qref_[i];
         }
 
         Vector3 zmpref = zmpseq->at(currentFrameIndex);

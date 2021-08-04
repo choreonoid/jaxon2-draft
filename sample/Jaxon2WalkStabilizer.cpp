@@ -22,21 +22,21 @@ using namespace cnoid;
 class Jaxon2WalkStabilizer : public SimpleController
 {
     // interfaces for a simulated body
-    Body *ioBody;
-    ForceSensorPtr lf_sensor;
-    ForceSensorPtr rf_sensor;
+    Body *ioBody_;
+    ForceSensorPtr LFSensor_;
+    ForceSensorPtr RFSensor_;
 
     // virtual body for control
-    Body *ikBody;
-    std::shared_ptr<JointPath> baseToRAnkle;
-    std::shared_ptr<JointPath> baseToLAnkle;
+    Body *ikBody_;
+    std::shared_ptr<JointPath> baseToRAnkle_;
+    std::shared_ptr<JointPath> baseToLAnkle_;
 
     int currentFrameIndex;
-    double dt;
-    std::vector<double> q_old;
-    std::vector<double> qref_old;
-    std::vector<double> qref_modified;
-    Vector3 bodyModification;
+    double dt_;
+    std::vector<double> qOld_;
+    std::vector<double> qrefOld_;
+    std::vector<double> qrefModified_;
+    Vector3 bodyModification_;
 
     std::shared_ptr<MultiValueSeq> qseq;
     std::shared_ptr<Vector3Seq> zmpseq;
@@ -46,32 +46,32 @@ public:
     {
         // initializes variables
         currentFrameIndex = 0;
-        dt = io->timeStep();
-        ioBody = io->body();
-        bodyModification = Vector3::Zero();
+        dt_ = io->timeStep();
+        ioBody_ = io->body();
+        bodyModification_ = Vector3::Zero();
 
         // turns force sensors on
-        rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
-        lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
-        io->enableInput(rf_sensor);
-        io->enableInput(lf_sensor);
+        RFSensor_ = ioBody_->findDevice<ForceSensor>("RF_SENSOR");
+        LFSensor_ = ioBody_->findDevice<ForceSensor>("LF_SENSOR");
+        io->enableInput(RFSensor_);
+        io->enableInput(LFSensor_);
 
         // drives joints with torque input
-        for (auto joint : ioBody->joints()) {
+        for (auto joint : ioBody_->joints()) {
             joint->setActuationMode(Link::JOINT_TORQUE);
             io->enableIO(joint);
         }
 
         // creates chains to solve IK
-        ikBody = ioBody->clone();
-        baseToRAnkle = getCustomJointPath(ikBody,
-                                          ikBody->rootLink(),
-                                          ikBody->link("RLEG_LINK5"));
-        baseToRAnkle->calcForwardKinematics();
-        baseToLAnkle = getCustomJointPath(ikBody,
-                                          ikBody->rootLink(),
-                                          ikBody->link("LLEG_LINK5"));
-        baseToLAnkle->calcForwardKinematics();
+        ikBody_ = ioBody_->clone();
+        baseToRAnkle_ = getCustomJointPath(ikBody_,
+                                           ikBody_->rootLink(),
+                                           ikBody_->link("RLEG_LINK5"));
+        baseToRAnkle_->calcForwardKinematics();
+        baseToLAnkle_ = getCustomJointPath(ikBody_,
+                                           ikBody_->rootLink(),
+                                           ikBody_->link("LLEG_LINK5"));
+        baseToLAnkle_->calcForwardKinematics();
 
         // loads reference trajectories
         auto path = shareDirPath() / "JAXON2" / "motion" / "JAXON2"
@@ -86,7 +86,7 @@ public:
             io->os() << "Empty motion data." << std::endl;
             return false;
         }
-        if (qseq->numParts() != ioBody->numJoints()) {
+        if (qseq->numParts() != ioBody_->numJoints()) {
             io->os() << "Mismatch between the robot and the motion data "
                         "regarding the number of joints"
                      << std::endl;
@@ -108,18 +108,18 @@ public:
 
     bool start() override
     {
-        q_old.clear();
-        q_old.reserve(ioBody->numJoints());
-        qref_old.clear();
-        qref_old.reserve(ioBody->numJoints());
-        qref_modified.clear();
-        qref_modified.reserve(ioBody->numJoints());
+        qOld_.clear();
+        qOld_.reserve(ioBody_->numJoints());
+        qrefOld_.clear();
+        qrefOld_.reserve(ioBody_->numJoints());
+        qrefModified_.clear();
+        qrefModified_.reserve(ioBody_->numJoints());
 
-        for (auto joint : ioBody->joints()) {
+        for (auto joint : ioBody_->joints()) {
             const double q = joint->q();
-            q_old.push_back(q);
-            qref_old.push_back(q);
-            qref_modified.push_back(q);
+            qOld_.push_back(q);
+            qrefOld_.push_back(q);
+            qrefModified_.push_back(q);
         }
 
         return true;
@@ -134,40 +134,40 @@ public:
         const double Ky2 = 0.2;
 
         // calculates the reference body displacement from the ZMP error
-        double dx = Kx1 * errorZmp[0] - Kx2 * bodyModification[0];
-        double dy = Ky1 * errorZmp[1] - Ky2 * bodyModification[1];
-        bodyModification[0] += dx * dt;
-        bodyModification[1] += dy * dt;
+        double dx = Kx1 * errorZmp[0] - Kx2 * bodyModification_[0];
+        double dy = Ky1 * errorZmp[1] - Ky2 * bodyModification_[1];
+        bodyModification_[0] += dx * dt_;
+        bodyModification_[1] += dy * dt_;
 
         return;
     }
 
     void modifyFootPositions()
     {
-        cnoid::MultiSeq<double>::Frame qref = qseq->frame(currentFrameIndex);
-        for (int i = 0; i < ikBody->numJoints(); ++i) {
-            ikBody->joint(i)->q() = qref[i];
+        cnoid::MultiSeq<double>::Frame qref_ = qseq->frame(currentFrameIndex);
+        for (int i = 0; i < ikBody_->numJoints(); ++i) {
+            ikBody_->joint(i)->q() = qref_[i];
         }
-        baseToRAnkle->calcForwardKinematics();
-        baseToLAnkle->calcForwardKinematics();
+        baseToRAnkle_->calcForwardKinematics();
+        baseToLAnkle_->calcForwardKinematics();
 
         // applies feedbacks
-        Isometry3 Tr = baseToRAnkle->endLink()->T();
-        Tr.translation() -= bodyModification;
-        Isometry3 Tl = baseToLAnkle->endLink()->T();
-        Tl.translation() -= bodyModification;
+        Isometry3 Tr = baseToRAnkle_->endLink()->T();
+        Tr.translation() -= bodyModification_;
+        Isometry3 Tl = baseToLAnkle_->endLink()->T();
+        Tl.translation() -= bodyModification_;
 
         // solves IK
         bool isSuccess = true;
-        isSuccess &= baseToRAnkle->calcInverseKinematics(Tr);
-        isSuccess &= baseToLAnkle->calcInverseKinematics(Tl);
+        isSuccess &= baseToRAnkle_->calcInverseKinematics(Tr);
+        isSuccess &= baseToLAnkle_->calcInverseKinematics(Tl);
 
         if (isSuccess) {
-            for (auto joint : baseToRAnkle->joints()) {
-                qref_modified[joint->jointId()] = joint->q();
+            for (auto joint : baseToRAnkle_->joints()) {
+                qrefModified_[joint->jointId()] = joint->q();
             }
-            for (auto joint : baseToLAnkle->joints()) {
-                qref_modified[joint->jointId()] = joint->q();
+            for (auto joint : baseToLAnkle_->joints()) {
+                qrefModified_[joint->jointId()] = joint->q();
             }
         }
     }
@@ -180,19 +180,19 @@ public:
         calculateBodyModification(errorZmp);
         modifyFootPositions();
 
-        for (int i = 0; i < ioBody->numJoints(); ++i) {
-            const double q = ioBody->joint(i)->q();
-            const double dq = (q - q_old[i]) / dt;
-            const double dqref = (qref_modified[i] - qref_old[i]) / dt;
+        for (int i = 0; i < ioBody_->numJoints(); ++i) {
+            const double q = ioBody_->joint(i)->q();
+            const double dq = (q - qOld_[i]) / dt_;
+            const double dqref = (qrefModified_[i] - qrefOld_[i]) / dt_;
 
             // PD control
-            const double u = (qref_modified[i] - q) * pgain[i]
+            const double u = (qrefModified_[i] - q) * pgain[i]
                              + (dqref - dq) * dgain[i];
-            ioBody->joint(i)->u() = u;
+            ioBody_->joint(i)->u() = u;
 
             // record joint positions
-            q_old[i] = q;
-            qref_old[i] = qref_modified[i];
+            qOld_[i] = q;
+            qrefOld_[i] = qrefModified_[i];
         }
 
         bool isActive = false;
@@ -206,29 +206,29 @@ public:
     Vector3 calcZMP()
     {
         // calculates foot poses with FK (root-relative)
-        for (int i = 0; i < ioBody->numJoints(); ++i) {
-            ikBody->joint(i)->q() = ioBody->joint(i)->q();
+        for (int i = 0; i < ioBody_->numJoints(); ++i) {
+            ikBody_->joint(i)->q() = ioBody_->joint(i)->q();
         }
-        baseToRAnkle->calcForwardKinematics();
-        baseToLAnkle->calcForwardKinematics();
+        baseToRAnkle_->calcForwardKinematics();
+        baseToLAnkle_->calcForwardKinematics();
 
-        const Isometry3 right_foot_pose = ikBody->link("RLEG_LINK5")->T();
-        const Isometry3 left_foot_pose = ikBody->link("LLEG_LINK5")->T();
+        const Isometry3 rightFootPose = ikBody_->link("RLEG_LINK5")->T();
+        const Isometry3 leftFootPose = ikBody_->link("LLEG_LINK5")->T();
 
         // calculates force sensor poses (root-relative)
-        const Isometry3 rf_sensor_pose = right_foot_pose * rf_sensor->T_local();
-        const Isometry3 lf_sensor_pose = left_foot_pose * lf_sensor->T_local();
+        const Isometry3 RFSensorPose = rightFootPose * RFSensor_->T_local();
+        const Isometry3 LFSensorPose = leftFootPose * LFSensor_->T_local();
 
         // gets force sensor values (local)
-        const Vector6 right_wrench = rf_sensor->F();
-        const Vector6 left_wrench = lf_sensor->F();
+        const Vector6 rightWrench = RFSensor_->F();
+        const Vector6 leftWrench = LFSensor_->F();
 
         // 0.019 represents a vertical distance
         // from the bottom of foot to the force sensor
-        return calcZMPfromDoubleWrench(rf_sensor_pose,
-                                       right_wrench,
-                                       lf_sensor_pose,
-                                       left_wrench,
+        return calcZMPfromDoubleWrench(RFSensorPose,
+                                       rightWrench,
+                                       LFSensorPose,
+                                       leftWrench,
                                        0.019);
     }
 };
