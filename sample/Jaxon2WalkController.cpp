@@ -79,7 +79,7 @@ class Jaxon2WalkController : public SimpleController
     shared_ptr<Vector3Seq> zmpseq;
 
 public:
-    virtual bool initialize(SimpleControllerIO *io) override
+    bool initialize(SimpleControllerIO *io) override
     {
         // initializes variables
         currentFrameIndex = 0;
