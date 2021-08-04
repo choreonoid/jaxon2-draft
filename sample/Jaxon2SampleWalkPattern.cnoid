@@ -89,7 +89,7 @@ items:
                   plugin: PoseSeq
                   class: PoseSeqItem
                   data: 
-                    file: "Jaxon2SampleWalkPattern.pseq"
+                    file: "${SHARE}/JAXON2/motion/JAXON2/Jaxon2SampleWalkPattern.pseq"
                     format: POSE-SEQ-YAML
                     barLength: 1
                     is_body_motion_selected: true
