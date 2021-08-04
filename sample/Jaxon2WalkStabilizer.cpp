@@ -50,17 +50,6 @@ public:
         ioBody = io->body();
         bodyModification = Vector3::Zero();
 
-        q_old.reserve(ioBody->numJoints());
-        qref_old.reserve(ioBody->numJoints());
-        qref_modified.reserve(ioBody->numJoints());
-        for (auto joint : ioBody->joints()) {
-            const double q = joint->q();
-            q_old.push_back(q);
-            qref_old.push_back(q);
-            qref_modified.push_back(q);
-            // should be executed in when simulation starts
-        }
-
         // turns force sensors on
         rf_sensor = ioBody->findDevice<ForceSensor>("RF_SENSOR");
         lf_sensor = ioBody->findDevice<ForceSensor>("LF_SENSOR");
@@ -112,6 +101,25 @@ public:
             io->os() << "Warning: the simulation time step is different from "
                         "that of the motion data "
                      << std::endl;
+        }
+
+        return true;
+    }
+
+    bool start() override
+    {
+        q_old.clear();
+        q_old.reserve(ioBody->numJoints());
+        qref_old.clear();
+        qref_old.reserve(ioBody->numJoints());
+        qref_modified.clear();
+        qref_modified.reserve(ioBody->numJoints());
+
+        for (auto joint : ioBody->joints()) {
+            const double q = joint->q();
+            q_old.push_back(q);
+            qref_old.push_back(q);
+            qref_modified.push_back(q);
         }
 
         return true;
