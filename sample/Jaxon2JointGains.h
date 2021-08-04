@@ -1,6 +1,6 @@
-/*
-  \file
-  \author Yuki Onishi
+/**
+   \file
+   \author Yuki Onishi
 */
 
 #ifndef JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H_

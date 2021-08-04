@@ -1,3 +1,8 @@
+/**
+   \file
+   \author Yuki Onishi
+*/
+
 #include <cnoid/BasicSensors>
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>

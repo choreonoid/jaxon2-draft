@@ -1,5 +1,8 @@
-#include <cnoid/SimpleController>
-#include <cnoid/Link>
+/**
+   \file
+   \author Shin'ichiro Nakaoka
+*/
+
 #include <cnoid/BodyMotion>
 #include <cnoid/Vector3Seq>
 #include <cnoid/ExecutablePath>
