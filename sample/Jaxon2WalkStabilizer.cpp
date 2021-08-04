@@ -9,52 +9,11 @@
 
 #include <iostream>
 
+#include "Jaxon2JointGains.h"
+#include "ZMPUtils.h"
+
 using namespace std;
 using namespace cnoid;
-
-const double pgain[] = {
-    // right leg
-    10000.0, 20000.0, 20000.0, 10000.0, 10000.0, 10000.0,
-    // left leg
-    10000.0, 20000.0, 20000.0, 10000.0, 10000.0, 10000.0,
-    // body
-    8000.0, 8000.0, 8000.0,
-    // neck
-    1000.0, 1000.0,
-    // right arm
-    4000.0, 6000.0, 6000.0, 6000.0, 4000.0, 2000.0, 2000.0, 2000.0,
-    // left arm
-    4000.0, 6000.0, 6000.0, 6000.0, 4000.0, 2000.0, 2000.0, 2000.0,
-    // left hand
-    500.0, 500.0,
-    // right hand
-    500.0, 500.0,
-    // LRF
-    0.1,
-};
-
-
-const double dgain[] = {
-    // right leg
-    100.0, 200.0, 200.0, 100.0, 100.0, 100.0,
-    // left leg
-    100.0, 200.0, 200.0, 100.0, 100.0, 100.0,
-    // body
-    100.0, 400.0, 30.0,
-    // neck
-    2.0, 5.0,
-    // right arm
-    5.0, 10.0, 20.0, 6.0, 20.0, 5.0, 5.0, 5.0,
-    // left arm
-    5.0, 10.0, 20.0, 6.0, 20.0, 5.0, 5.0, 5.0,
-    // left hand
-    1.0, 1.0,
-    // right hand
-    1.0, 1.0,
-    // LRF
-    0.0,
-};
-
 
 class Jaxon2WalkStabilizer : public SimpleController
 {
@@ -256,61 +215,6 @@ public:
                                        right_wrench,
                                        lf_sensor_pose,
                                        left_wrench);
-    }
-
-    Vector3 calcZMPfromSingleWrench(const Vector3 &position,
-                                    const Vector6 &wrench) const
-    {
-        // distance from the bottom of foot to the force sensor
-        const double d = 0.019;
-        if (wrench[2] > 0.0) {
-            const double px = -(wrench[4] + d * wrench[0]) / wrench[2];
-            const double py = (wrench[3] + d * wrench[1]) / wrench[2];
-            return Vector3(px, py, 0.0) + position;
-        } else {
-            return Vector3::Zero() + position;
-        }
-    }
-
-    Vector6 transformWrench(const Matrix3 &rotation, const Vector6 wrench) const
-    {
-        Vector6 wrench_transformed;
-        wrench_transformed << rotation * wrench.block<3, 1>(0, 0),
-            rotation * wrench.block<3, 1>(3, 0);
-        return wrench_transformed;
-    }
-
-    Vector3 calcZMPfromDoubleWrench(const Isometry3 &pose0,
-                                    const Vector6 &wrench0,
-                                    const Isometry3 &pose1,
-                                    const Vector6 wrench1) const
-    {
-        // transforms wrenches from sensor-local to root-relative
-        const Vector6 wrench0_transformed
-            = transformWrench(pose0.rotation().transpose(), wrench0);
-        const Vector6 wrench1_transformed
-            = transformWrench(pose1.rotation().transpose(), wrench1);
-
-        // determines foot states by refering to the vertical forces,
-        // i.e. wrench[2]
-        if (wrench0_transformed[2] > 0.0 && wrench1_transformed[2] > 0.0) {
-            const Vector3 zmp0 = calcZMPfromSingleWrench(pose0.translation(),
-                                                         wrench0_transformed);
-            const Vector3 zmp1 = calcZMPfromSingleWrench(pose1.translation(),
-                                                         wrench1_transformed);
-
-            return (zmp0 * wrench0_transformed[2]
-                    + zmp1 * wrench1_transformed[2])
-                   / (wrench0_transformed[2] + wrench1_transformed[2]);
-        } else if (wrench0_transformed[2] > 0.0) {
-            return calcZMPfromSingleWrench(pose0.translation(),
-                                           wrench0_transformed);
-        } else if (wrench1_transformed[2] > 0.0) {
-            return calcZMPfromSingleWrench(pose1.translation(),
-                                           wrench1_transformed);
-        } else {
-            return Vector3::Zero();
-        }
     }
 };
 
