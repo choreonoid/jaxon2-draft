@@ -21,11 +21,13 @@ using namespace cnoid;
 
 class Jaxon2WalkStabilizer : public SimpleController
 {
+    // interfaces for a simulated body
     Body *ioBody;
-    Body *ikBody;
     ForceSensorPtr lf_sensor;
     ForceSensorPtr rf_sensor;
 
+    // virtual body for control
+    Body *ikBody;
     std::shared_ptr<JointPath> baseToRAnkle;
     std::shared_ptr<JointPath> baseToLAnkle;
 
