@@ -29,6 +29,8 @@ const double pgain[] = {
     500.0, 500.0,
     // right hand
     500.0, 500.0,
+    // LRF
+    0.1,
 };
 
 
@@ -49,6 +51,8 @@ const double dgain[] = {
     1.0, 1.0,
     // right hand
     1.0, 1.0,
+    // LRF
+    0.0,
 };
 
 
