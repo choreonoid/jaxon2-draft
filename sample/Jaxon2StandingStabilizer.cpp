@@ -188,10 +188,13 @@ public:
         const Vector6 right_wrench = rf_sensor->F();
         const Vector6 left_wrench = lf_sensor->F();
 
+        // 0.019 represents a vertical distance
+        // from the bottom of foot to the force sensor
         return calcZMPfromDoubleWrench(rf_sensor_pose,
                                        right_wrench,
                                        lf_sensor_pose,
-                                       left_wrench);
+                                       left_wrench,
+                                       0.019);
     }
 };
 

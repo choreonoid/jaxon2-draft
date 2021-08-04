@@ -13,13 +13,14 @@ using cnoid::Matrix3;
 using cnoid::Vector3;
 using cnoid::Vector6;
 
-Vector3 calcZMPfromSingleWrench(const Vector3 &position, const Vector6 &wrench)
+Vector3 calcZMPfromSingleWrench(const Vector3 &position,
+                                const Vector6 &wrench,
+                                const double vertical_offset)
 {
-    // distance from the bottom of foot to the force sensor
-    const double d = 0.019;
     if (wrench[2] > 0.0) {
-        const double px = -(wrench[4] + d * wrench[0]) / wrench[2];
-        const double py = (wrench[3] + d * wrench[1]) / wrench[2];
+        const double px = -(wrench[4] + vertical_offset * wrench[0])
+                          / wrench[2];
+        const double py = (wrench[3] + vertical_offset * wrench[1]) / wrench[2];
         return Vector3(px, py, 0.0) + position;
     } else {
         return Vector3::Zero() + position;
@@ -37,7 +38,8 @@ Vector6 transformWrench(const Matrix3 &rotation, const Vector6 wrench)
 Vector3 calcZMPfromDoubleWrench(const Isometry3 &pose0,
                                 const Vector6 &wrench0,
                                 const Isometry3 &pose1,
-                                const Vector6 wrench1)
+                                const Vector6 wrench1,
+                                const double vertical_offset)
 {
     // transforms wrenches from sensor-local to root-relative
     const Vector6 wrench0_transformed
@@ -49,16 +51,22 @@ Vector3 calcZMPfromDoubleWrench(const Isometry3 &pose0,
     // i.e. wrench[2]
     if (wrench0_transformed[2] > 0.0 && wrench1_transformed[2] > 0.0) {
         const Vector3 zmp0 = calcZMPfromSingleWrench(pose0.translation(),
-                                                     wrench0_transformed);
+                                                     wrench0_transformed,
+                                                     vertical_offset);
         const Vector3 zmp1 = calcZMPfromSingleWrench(pose1.translation(),
-                                                     wrench1_transformed);
+                                                     wrench1_transformed,
+                                                     vertical_offset);
 
         return (zmp0 * wrench0_transformed[2] + zmp1 * wrench1_transformed[2])
                / (wrench0_transformed[2] + wrench1_transformed[2]);
     } else if (wrench0_transformed[2] > 0.0) {
-        return calcZMPfromSingleWrench(pose0.translation(), wrench0_transformed);
+        return calcZMPfromSingleWrench(pose0.translation(),
+                                       wrench0_transformed,
+                                       vertical_offset);
     } else if (wrench1_transformed[2] > 0.0) {
-        return calcZMPfromSingleWrench(pose1.translation(), wrench1_transformed);
+        return calcZMPfromSingleWrench(pose1.translation(),
+                                       wrench1_transformed,
+                                       vertical_offset);
     } else {
         return Vector3::Zero();
     }
