@@ -74,7 +74,7 @@ items:
           children: 
             - 
               id: 3
-              name: "WalkPatternController"
+              name: "WalkStabilizer"
               plugin: Body
               class: SimpleControllerItem
               data: 
