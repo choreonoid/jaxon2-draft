@@ -125,16 +125,13 @@ public:
         return true;
     }
 
-    void calculateBodyModification(const Vector3 &refZmp, const Vector3 &zmp)
+    void calculateBodyModification(const Vector3 &errorZmp)
     {
         // sets gains
         const double Kx1 = 0.1;
         const double Kx2 = 0.2;
         const double Ky1 = 0.1;
         const double Ky2 = 0.2;
-
-        // calculates the (3-dimensional) ZMP error
-        const Vector3d errorZmp = zmp - refZmp;
 
         // calculates the reference body displacement from the ZMP error
         double dx = Kx1 * errorZmp[0] - Kx2 * bodyModification[0];
@@ -179,7 +176,8 @@ public:
     {
         const Vector3 zmp = calcZMP();
         const Vector3 refZmp = zmpseq->at(currentFrameIndex);
-        calculateBodyModification(refZmp, zmp);
+        const Vector3d errorZmp = zmp - refZmp;
+        calculateBodyModification(errorZmp);
         modifyFootPositions();
 
         for (int i = 0; i < ioBody->numJoints(); ++i) {
