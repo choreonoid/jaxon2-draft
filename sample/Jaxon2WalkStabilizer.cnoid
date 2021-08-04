@@ -80,7 +80,7 @@ items:
               data: 
                 isNoDelayMode: false
                 controllerOptions: ""
-                controller: "Jaxon2WalkController"
+                controller: "Jaxon2WalkStabilizer"
                 baseDirectory: "Controller directory"
                 reloading: false
                 exportSymbols: false

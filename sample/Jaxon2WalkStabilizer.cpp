@@ -56,7 +56,7 @@ const double dgain[] = {
 };
 
 
-class Jaxon2WalkController : public SimpleController
+class Jaxon2WalkStabilizer : public SimpleController
 {
     Body *ioBody;
     Body *ikBody;
@@ -322,4 +322,4 @@ public:
     }
 };
 
-CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Jaxon2WalkController)
+CNOID_IMPLEMENT_SIMPLE_CONTROLLER_FACTORY(Jaxon2WalkStabilizer)
