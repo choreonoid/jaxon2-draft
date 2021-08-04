@@ -60,8 +60,6 @@ class Jaxon2WalkStabilizer : public SimpleController
 {
     Body *ioBody;
     Body *ikBody;
-    Link *rFoot;
-    Link *lFoot;
     ForceSensorPtr lf_sensor;
     ForceSensorPtr rf_sensor;
 
@@ -109,12 +107,6 @@ public:
             joint->setActuationMode(Link::JOINT_TORQUE);
             io->enableIO(joint);
         }
-
-        // sets to update global positions for calculating ZMP
-        rFoot = ioBody->link("RLEG_LINK5");
-        lFoot = ioBody->link("LLEG_LINK5");
-        io->enableInput(rFoot, LINK_POSITION);
-        io->enableInput(lFoot, LINK_POSITION);
 
         // creates chains to solve IK
         ikBody = ioBody->clone();
