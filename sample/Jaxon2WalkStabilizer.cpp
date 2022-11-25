@@ -77,7 +77,7 @@ public:
         auto path = shareDirPath() / "JAXON2" / "motion" / "JAXON2"
                     / "SampleWalkPattern.seq";
         BodyMotion motion;
-        if (!motion.loadStandardYAMLformat(path.string())) {
+        if (!motion.load(path.string())) {
             io->os() << motion.seqMessage() << std::endl;
             return false;
         }
