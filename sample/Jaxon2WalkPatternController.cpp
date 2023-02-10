@@ -1,8 +1,3 @@
-/**
-   \file
-   \author Shin'ichiro Nakaoka
-*/
-
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>
 #include <cnoid/Link>
@@ -24,7 +19,7 @@ public:
         ioBody_ = io->body();
 
         for (auto joint : ioBody_->joints()) {
-            joint->setActuationMode(Link::JOINT_DISPLACEMENT);
+            joint->setActuationMode(JointDisplacement);
             io->enableIO(joint);
         }
 
@@ -35,6 +30,7 @@ public:
             io->os() << motion.seqMessage() << std::endl;
             return false;
         }
+        motion.updateJointPosSeqWithBodyPositionSeq();
         qseq = motion.jointPosSeq();
         if (qseq->numFrames() == 0) {
             io->os() << "Empty motion data." << std::endl;

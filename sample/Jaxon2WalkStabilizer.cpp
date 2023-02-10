@@ -1,8 +1,3 @@
-/**
-   \file
-   \author Yuki Onishi
-*/
-
 #include <cnoid/BasicSensors>
 #include <cnoid/BodyMotion>
 #include <cnoid/ExecutablePath>
@@ -58,7 +53,7 @@ public:
 
         // drives joints with torque input
         for (auto joint : ioBody_->joints()) {
-            joint->setActuationMode(Link::JOINT_TORQUE);
+            joint->setActuationMode(JointTorque);
             io->enableIO(joint);
         }
 
@@ -81,6 +76,7 @@ public:
             io->os() << motion.seqMessage() << std::endl;
             return false;
         }
+        motion.updateJointPosSeqWithBodyPositionSeq();
         qseq = motion.jointPosSeq();
         if (qseq->numFrames() == 0) {
             io->os() << "Empty motion data." << std::endl;

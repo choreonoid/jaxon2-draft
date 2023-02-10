@@ -1,10 +1,5 @@
-/**
-   \file
-   \author Yuki Onishi
-*/
-
-#ifndef JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H_
-#define JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H_
+#ifndef JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H
+#define JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H
 
 const double pgain[] = {
     // right leg
@@ -48,4 +43,4 @@ const double dgain[] = {
     0.0,
 };
 
-#endif  // JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H_
+#endif  // JAXON2_SAMPLE_JAXON2_JOINT_GAINS_H

@@ -1,10 +1,5 @@
-/**
-   \file
-   \author Yuki Onishi
-*/
-
-#ifndef JAXON2_SAMPLE_ZMP_UTILS_H_
-#define JAXON2_SAMPLE_ZMP_UTILS_H_
+#ifndef JAXON2_SAMPLE_ZMP_UTILS_H
+#define JAXON2_SAMPLE_ZMP_UTILS_H
 
 #include <cnoid/EigenUtil>
 
@@ -71,4 +66,4 @@ Vector3 calcZMPfromDoubleWrench(const Isometry3 &pose0,
     }
 }
 
-#endif  // JAXON2_SAMPLE_ZMP_UTILS_H_
+#endif  // JAXON2_SAMPLE_ZMP_UTILS_H
