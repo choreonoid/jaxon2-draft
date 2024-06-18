@@ -59,13 +59,11 @@ public:
 
         // creates chains to solve IK
         ikBody_ = ioBody_->clone();
-        baseToRAnkle_ = getCustomJointPath(ikBody_,
-                                           ikBody_->rootLink(),
-                                           ikBody_->link("RLEG_LINK5"));
+        baseToRAnkle_ = JointPath::getCustomPath(ikBody_->rootLink(),
+                                                 ikBody_->link("RLEG_LINK5"));
         baseToRAnkle_->calcForwardKinematics();
-        baseToLAnkle_ = getCustomJointPath(ikBody_,
-                                           ikBody_->rootLink(),
-                                           ikBody_->link("LLEG_LINK5"));
+        baseToLAnkle_ = JointPath::getCustomPath(ikBody_->rootLink(),
+                                                 ikBody_->link("LLEG_LINK5"));
         baseToLAnkle_->calcForwardKinematics();
 
         // loads reference trajectories
@@ -76,7 +74,7 @@ public:
             io->os() << motion.seqMessage() << std::endl;
             return false;
         }
-        motion.updateJointPosSeqWithBodyPositionSeq();
+        motion.updateJointPosSeqWithBodyStateSeq();
         qseq = motion.jointPosSeq();
         if (qseq->numFrames() == 0) {
             io->os() << "Empty motion data." << std::endl;

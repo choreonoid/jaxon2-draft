@@ -55,13 +55,11 @@ public:
 
         // creates chains to solve IK
         ikBody_ = ioBody_->clone();
-        baseToRAnkle_ = getCustomJointPath(ikBody_,
-                                           ikBody_->rootLink(),
-                                           ikBody_->link("RLEG_LINK5"));
+        baseToRAnkle_ = JointPath::getCustomPath(ikBody_->rootLink(),
+                                                 ikBody_->link("RLEG_LINK5"));
         baseToRAnkle_->calcForwardKinematics();
-        baseToLAnkle_ = getCustomJointPath(ikBody_,
-                                           ikBody_->rootLink(),
-                                           ikBody_->link("LLEG_LINK5"));
+        baseToLAnkle_ = JointPath::getCustomPath(ikBody_->rootLink(),
+                                                 ikBody_->link("LLEG_LINK5"));
         baseToLAnkle_->calcForwardKinematics();
 
         return true;

@@ -30,7 +30,7 @@ public:
             io->os() << motion.seqMessage() << std::endl;
             return false;
         }
-        motion.updateJointPosSeqWithBodyPositionSeq();
+        motion.updateJointPosSeqWithBodyStateSeq();
         qseq = motion.jointPosSeq();
         if (qseq->numFrames() == 0) {
             io->os() << "Empty motion data." << std::endl;
