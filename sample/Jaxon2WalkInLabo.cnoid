@@ -12,7 +12,7 @@ items:
       class: WorldItem
       is_checked: true
       data:
-        collision_detection: true
+        collision_detection: false
         collision_detector: AISTCollisionDetector
         default_material_table_file: "${SHARE}/default/materials.yaml"
       children:
@@ -25,7 +25,7 @@ items:
           data:
             file: "${SHARE}/JAXON2/model/JAXON2/JAXON2.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0.0646326097, -0.00032418861, 0.971666126 ]
+            rootPosition: [ 0, 0, 0.971666126 ]
             rootAttitude: [
               1, 2.72341689e-14, -9.99864885e-10,
               -2.72341689e-14, 1, -2.66475206e-14,
@@ -35,9 +35,9 @@ items:
               -24.5175, -0.0243061, 0, 0, 0, 0, 0, 0, 40, -20,
               -5, -80, 0, 0, -20, 0, 40, 20, 5, -80,
               0, 0, -20, 0, 0, 0, 0, 0 ]
-            initialRootPosition: [ 0.0646326097, -0.00032418861, 0.971666126 ]
+            initialRootPosition: [ 0, 0, 0.971666126 ]
             initialRootAttitude: [
-              1, 2.72341688e-14, -9.99864885e-10,
+              1, 2.72341689e-14, -9.99864885e-10,
               -2.72341689e-14, 1, -2.66475206e-14,
               9.99864885e-10, 2.66475206e-14, 1 ]
             fix_root: false
@@ -64,33 +64,32 @@ items:
           children:
             -
               id: 3
-              name: "BodyMotionController"
+              name: "WalkStabilizer"
               plugin: Body
-              class: BodyMotionControllerItem
-              children:
-                -
-                  id: 4
-                  name: "SampleWalkPattern"
-                  plugin: PoseSeq
-                  class: PoseSeqItem
-                  data:
-                    file: "${SHARE}/JAXON2/motion/JAXON2/Jaxon2SampleWalkPattern.pseq"
-                    format: POSE-SEQ-YAML
-                    bar_length: 1
+              class: SimpleControllerItem
+              data:
+                isNoDelayMode: false
+                controllerOptions: ""
+                controller: "Jaxon2WalkStabilizer"
+                base_directory: "Controller directory"
+                reloading: false
+                export_symbols: false
         -
-          id: 5
-          name: "Floor"
+          id: 4
+          name: "Labo1"
           plugin: Body
           class: BodyItem
+          is_checked: true
           data:
-            file: "${SHARE}/model/misc/floor.body"
+            file: "${SHARE}/model/Labo1/Labo1v2.body"
             format: CHOREONOID-BODY
-            rootPosition: [ 0, 0, -0.1 ]
+            rootPosition: [ 0, -0.5, -0.1 ]
             rootAttitude: [
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
-            initialRootPosition: [ 0, 0, -0.1 ]
+            jointDisplacements: [ 0 ]
+            initialRootPosition: [ 0, -0.5, -0.1 ]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,
@@ -101,7 +100,7 @@ items:
             lock_location: true
             scene_sensitive: true
         -
-          id: 6
+          id: 5
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -172,14 +171,14 @@ views:
       focus_position: [ 0, 0, 0 ]
       visible_polygon_elements: [ face ]
       highlighting: false
-      collision_lines: true
+      collision_lines: false
       cameras:
         -
           camera: [ System, Perspective ]
           is_current: true
-          eye: [ 3.20149, -2.42489, 1.54654 ]
-          direction: [ -0.727065, 0.662816, -0.179029 ]
-          up: [ -0.132303, 0.120612, 0.983844 ]
+          eye: [ 4.21623, 2.5314, 2.11761 ]
+          direction: [ -0.821238, -0.504404, -0.266731 ]
+          up: [ -0.227284, -0.139597, 0.963771 ]
         -
           camera: [ System, Orthographic ]
           ortho_height: 2.70671
@@ -187,11 +186,11 @@ views:
       culling_mode: enabled
       shading_mode: smooth
       world_light: true
-      world_light_intensity: 0.5
+      world_light_intensity: 0.7
       ambient_light: true
       ambient_light_intensity: 0.25
       head_light: true
-      head_light_intensity: 0.75
+      head_light_intensity: 0.9
       world_light_shadow: true
       shadow_lights:
         - { index: 0, enabled: false }
@@ -201,7 +200,7 @@ views:
       point_size: 1
       field_of_view: 35
       clip_distances: [ 0.04, 200 ]
-      floorGrid: true
+      floorGrid: false
       floorGridSpan: 10
       floorGridInterval: 0.5
       xzGrid: false
@@ -268,9 +267,7 @@ views:
     id: 10
     plugin: PoseSeq
     class: PoseRollView
-    mounted: true
     state:
-      currentPoseSeqItem: 4
       defaultTransitionTime: 0
       updateAll: true
       autoUpdate: false
@@ -353,8 +350,8 @@ toolbars:
     zmp_output_mode: original
 Body:
   "BodySelectionManager":
-    current_body_item: 2
-    current_link: "WAIST_LINK"
+    current_body_item: 4
+    current_link: "Ground"
   "KinematicFaultChecker":
     checkJointPositions: true
     angleMargin: 0
@@ -370,9 +367,9 @@ Body:
         body_item: 2
         show_cm: false
         show_cm_projection: false
-        show_zmp: true
+        show_zmp: false
       -
-        body_item: 5
+        body_item: 4
         show_cm: false
         show_cm_projection: false
         show_zmp: false
@@ -401,7 +398,7 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 415, 805 ]
+              sizes: [ 414, 806 ]
               children:
                 -
                   type: pane
@@ -420,17 +417,17 @@ viewAreas:
                   views: [ 4 ]
                 -
                   type: pane
-                  views: [ 3, 10, 11 ]
-                  current: 10
+                  views: [ 3, 11 ]
+                  current: 3
         -
           type: splitter
           orientation: vertical
-          sizes: [ 491, 729 ]
+          sizes: [ 744, 476 ]
           children:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 200, 287 ]
+              sizes: [ 303, 437 ]
               children:
                 -
                   type: pane
@@ -451,8 +448,7 @@ layoutOfToolBars:
     -
       - { name: "BodyBar", x: 0, priority: 0 }
       - { name: "KinematicsBar", x: 0, priority: 1 }
-      - { name: "SceneBar", x: 0, priority: 2 }
-      - { name: "GraphBar", x: 0, priority: 3 }
-      - { name: "CaptureBar", x: 0, priority: 4 }
-      - { name: "BodyMotionGenerationBar", x: 1205, priority: 0 }
-      - { name: "LeggedBodyBar", x: 1350, priority: 0 }
+      - { name: "CaptureBar", x: 0, priority: 2 }
+      - { name: "LeggedBodyBar", x: 569, priority: 4 }
+      - { name: "SceneBar", x: 615, priority: 3 }
+      - { name: "GraphBar", x: 1415, priority: 5 }
